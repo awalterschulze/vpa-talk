@@ -51,6 +51,9 @@ deriveCalls xs = concatMap deriveCall xs
 -- | Each node expression is replaced with a Nil or EmptySet based on whether that node matched.
 -- | The matches list is read from the head and matches that are left are returned.
 -- | This means that the original caller should end up with an empty list of matches.
+-- | deriveReturn can be broken up into two functions:
+-- |  - replaceNodeExprs, which replaces the nodeExprs with the derivative and
+-- |  - deriveRest, which derives the rest of the expressions.
 -- | deriveReturn :: expr -> matches -> (expr, [])
 deriveReturn :: Expr -> [Bool] -> (Expr, [Bool])
 deriveReturn EmptySet ms = (EmptySet, ms)
@@ -95,6 +98,11 @@ deriveReturns (x:xs) ms =
 derives :: [Expr] -> Tree -> [Expr]
 derives xs (Tree a children) =
     let nodexs = deriveCalls xs in
+    -- we have extracted some of  the logic that could have been part of deriveCalls,
+    -- which could have return the child expressions, instead of the NodeExprs.
+    -- then deriveCall's signature would have been:
+    -- deriveCall :: Expr -> Char -> Expr
+    -- deriveCall (Node a x) b = if a == b then x else EmptySet
     let childxs = map (\(NodeExpr b thn) -> if a == b then thn else EmptySet) nodexs in
     let ms = matches childxs children in
     let dxs = deriveReturns xs ms in
