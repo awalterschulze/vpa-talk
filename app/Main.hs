@@ -4,6 +4,7 @@ import qualified Str
 import qualified StrVPA
 import qualified Tree
 import qualified TreeVPA
+import qualified PullVPA
 
 main :: IO ()
 main = do
@@ -22,4 +23,8 @@ main = do
     putStrLn "# TreeVPA"
     putStrLn "----------"
     TreeVPA.tests
+    putStrLn "=========="
+    putStrLn "# PullVPA"
+    putStrLn "----------"
+    PullVPA.tests
     putStrLn "=========="
