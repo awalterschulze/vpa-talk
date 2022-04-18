@@ -32,10 +32,7 @@
     {
       "Description": "3–4 large bananas, mashed",
       "Name": "Bananas",
-      "Range": {
-        "Min": 3,
-        "Max": 4
-      }
+      "Number": 3
     },
     {
       "Description": "1 teaspoon maple flavoring",
