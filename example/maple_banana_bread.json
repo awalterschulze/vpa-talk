@@ -1,0 +1,74 @@
+{
+  "Ingredients": [
+    {
+      "Description": "1/2 cup white sugar",
+      "Name": "White Sugar",
+      "Quantity": {
+        "Amount": 0.5,
+        "Kind": "cup"
+      }
+    },
+    {
+      "Description": "1/2 cup brown sugar",
+      "Name": "Brown Sugar",
+      "Quantity": {
+        "Amount": 0.5,
+        "Kind": "cup"
+      }
+    },
+    {
+      "Description": "1 1/2 cups butter, soft",
+      "Name": "Butter",
+      "Quantity": {
+        "Amount": 1.5,
+        "Kind": "cup"
+      }
+    },
+    {
+      "Description": "2 eggs",
+      "Name": "Eggs",
+      "Number": 2
+    },
+    {
+      "Description": "3–4 large bananas, mashed",
+      "Name": "Bananas",
+      "Range": {
+        "Min": 3,
+        "Max": 4
+      }
+    },
+    {
+      "Description": "1 teaspoon maple flavoring",
+      "Name": "Maple Flavoring",
+      "Quantity": {
+        "Amount": 1,
+        "Kind": "tsp"
+      }
+    },
+    {
+      "Description": "1 1/2 cups flour",
+      "Name": "Flour",
+      "Quantity": {
+        "Amount": 1.5,
+        "Kind": "cup"
+      }
+    },
+    {
+      "Description": "1/2 cup oatmeal",
+      "Name": "Oatmeal",
+      "Quantity": {
+        "Amount": 0.5,
+        "Kind": "cup"
+      }
+    },
+    {
+      "Description": "1 teaspoon baking soda",
+      "Name": "Baking Soda",
+      "Quantity": {
+        "Amount": 1,
+        "Kind": "tsp"
+      }
+    }
+  ],
+  "Reference": "https://pinchofyum.com/maple-banana-bread"
+}

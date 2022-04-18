@@ -1,0 +1,86 @@
+{
+  "Ingredients": [
+    {
+      "Description": "180 g / 1½ cups buckwheat flour*, GF flour mix OR all purpose wheat flour",
+      "Name": "Buckwheat Flour",
+      "Quantity": {
+        "Amount": 180,
+        "Kind": "g"
+      }
+    },
+    {
+      "Description": "1 tsp of baking powder",
+      "Name": "Baking Powder",
+      "Quantity": {
+        "Amount": 1,
+        "Kind": "tsp"
+      }
+    },
+    {
+      "Description": "¾ tsp of baking soda",
+      "Name": "Baking Soda",
+      "Quantity": {
+        "Amount": 0.75,
+        "Kind": "tsp"
+      }
+    },
+    {
+      "Description": "1½ tsp of cinnamon",
+      "Name": "Cinnamon",
+      "Quantity": {
+        "Amount": 1.5,
+        "Kind": "tsp"
+      }
+    },
+    {
+      "Description": "360 g / 1½ cups mashed up, overripe bananas + 1 banana for decoration (optional)",
+      "Name": "Bananas",
+      "Number": 4,
+      "Quantity": {
+        "Amount": 360,
+        "Kind": "g"
+      }
+    },
+    {
+      "Description": "60 ml / ¼ cup mild tasting oil (I used mild olive oil)",
+      "Name": "Olive Oil",
+      "Quantity": {
+        "Amount": 60,
+        "Kind": "ml"
+      }
+    },
+    {
+      "Description": "90 ml / 1/3 cup + 2 tsp almond milk (or other thin plant milk)",
+      "Name": "Almond Milk",
+      "Quantity": {
+        "Amount": 90,
+        "Kind": "ml"
+      }
+    },
+    {
+      "Description": "2 tsp lemon or lime juice",
+      "Name": "Lemon Juice",
+      "Quantity": {
+        "Amount": 2,
+        "Kind": "tsp"
+      }
+    },
+    {
+      "Description": "125 g/ ½ cup + 2 tbsp coconut sugar or demerara sugar**",
+      "Name": "Coconut Sugar",
+      "Quantity": {
+        "Amount": 125,
+        "Kind": "g"
+      }
+    },
+    {
+      "Description": "2 tsp maple syrup, for glaze (optional)",
+      "Name": "Maple Syrup",
+      "Quantity": {
+        "Amount": 2,
+        "Kind": "tsp"
+      }
+    }
+  ],
+  "Reference": "https://www.lazycatkitchen.com/eggless-banana-bread/"
+}
