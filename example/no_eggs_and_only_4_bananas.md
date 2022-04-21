@@ -24,11 +24,11 @@
 .Ingredients:
   (
     !(
-	  ._:.Name == "Eggs"
+      ._:.Name == "Eggs"
      ) &
-   	 ._:(
+    ._:(
        .Name == "Bananas" &
        .Number <= 4
-     )
+    )
   )
 ```
