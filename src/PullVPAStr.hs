@@ -10,6 +10,10 @@ import TreeConstructors
 import qualified EgglessBananaBread
 import qualified NuttyBananaBread
 import qualified MapleBananaBread
+import Debug.Trace
+import qualified Data.Set                      as S
+
+debug s x = trace ("[" ++ s ++ "]:" ++ (show x)) x
 
 type Tree = DataTree.Tree String
 
@@ -42,6 +46,83 @@ nullable (And x y) = nullable x && nullable y
 nullable (Concat x y) = nullable x && nullable y
 nullable (ZeroOrMore _) = True
 nullable (Not x) = not (nullable x)
+
+simplify :: Expr -> Expr
+simplify x =
+  case x of
+    EmptySet -> EmptySet
+    Nil -> Nil
+    (  Node   v  p     ) -> Node v (simplify p)
+    (  Concat p1 p2    ) -> simplifyConcat (simplify p1) (simplify p2)
+    (  Or     p1 p2    ) -> simplifyOr (simplify p1) (simplify p2)
+    (  And    p1 p2    ) -> simplifyAnd (simplify p1) (simplify p2)
+    (  ZeroOrMore p    ) -> simplifyZeroOrMore (simplify p)
+    (  Not        p    ) -> simplifyNot (simplify p)
+
+simplifyConcat :: Expr -> Expr -> Expr
+simplifyConcat (EmptySet)     _               = EmptySet
+simplifyConcat _              (EmptySet)      = EmptySet
+simplifyConcat (Concat p1 p2) p3              = simplifyConcat p1 (Concat p2 p3)
+simplifyConcat Nil          p               = p
+simplifyConcat p              Nil           = p
+simplifyConcat p1             p2              = Concat p1 p2
+
+simplifyOr :: Expr -> Expr -> Expr
+simplifyOr EmptySet      p               = p
+simplifyOr p               EmptySet      = p
+simplifyOr (Not EmptySet)            _               = (Not EmptySet)
+simplifyOr _               (Not EmptySet)            = (Not EmptySet)
+simplifyOr Nil p | nullable p == True = p
+                     | otherwise                  = Or Nil p
+simplifyOr p Nil | nullable p == True = p
+                     | otherwise                  = Or Nil p
+simplifyOr p1 p2 =
+  bin Or $ simplifyChildren Or $ S.toAscList $ setOfOrs p1 `S.union` setOfOrs p2
+
+simplifyChildren :: (Expr -> Expr -> Expr) -> [Expr] -> [Expr]
+simplifyChildren _ []  = []
+simplifyChildren _ [p] = [p]
+simplifyChildren op (p1@(Node v1 c1) : (p2@(Node v2 c2) : ps))
+  | v1 == v2  = simplifyChildren op $ Node v1 (op c1 c2) : ps
+  | otherwise = p1 : simplifyChildren op (p2 : ps)
+simplifyChildren op (p : ps) = p : simplifyChildren op ps
+
+bin :: (Expr -> Expr -> Expr) -> [Expr] -> Expr
+bin op [p]      = p
+bin op [p1, p2] = op p1 p2
+bin op (p : ps) = op p (bin op ps)
+
+setOfOrs :: Expr -> S.Set Expr
+setOfOrs (Or p1 p2) = setOfOrs p1 `S.union` setOfOrs p2
+setOfOrs p          = S.singleton p
+
+simplifyAnd :: Expr -> Expr -> Expr
+simplifyAnd EmptySet      _               = EmptySet
+simplifyAnd _               EmptySet      = EmptySet
+simplifyAnd (Not EmptySet)            p               = p
+simplifyAnd p               (Not EmptySet)            = p
+simplifyAnd Nil p | nullable p == True = Nil
+                      | otherwise                  = EmptySet
+simplifyAnd p Nil | nullable p == True = Nil
+                      | otherwise                  = EmptySet
+simplifyAnd p1 p2 =
+  bin And
+    $         simplifyChildren And
+    $         S.toAscList
+    $         setOfAnds p1
+    `S.union` setOfAnds p2
+
+setOfAnds :: Expr -> S.Set Expr
+setOfAnds (And p1 p2) = setOfAnds p1 `S.union` setOfAnds p2
+setOfAnds p           = S.singleton p
+
+simplifyZeroOrMore :: Expr -> Expr
+simplifyZeroOrMore (ZeroOrMore p) = ZeroOrMore p
+simplifyZeroOrMore p              = ZeroOrMore p
+
+simplifyNot :: Expr -> Expr
+simplifyNot (Not p) = p
+simplifyNot p       = Not p
 
 data NodeExpr =
     NodeExpr Pred Expr
@@ -112,7 +193,7 @@ deriveReturns :: [Expr] -> [Bool] -> [Expr]
 deriveReturns [] [] = []
 deriveReturns (x:xs) ms =
   let (x', ms') = deriveReturn x ms
-  in x' : deriveReturns xs ms'
+  in simplify x' : deriveReturns xs ms'
 
 evalPred :: Pred -> String -> Bool
 evalPred (Eq x) y = x == y
@@ -128,7 +209,7 @@ evalPred Any _ = True
 -- | but have to get the derivative of multiple child expressions.
 derives :: [Expr] -> Tree -> [Expr]
 derives xs (DataTree.Node a children) =
-    let nodexs = deriveCalls xs in
+    let nodexs = deriveCalls (debug "call" xs) in
     -- we have extracted some of  the logic that could have been part of deriveCalls,
     -- which could have return the child expressions, instead of the NodeExprs.
     -- then deriveCall's signature would have been:
@@ -137,7 +218,7 @@ derives xs (DataTree.Node a children) =
     let childxs = map (\(NodeExpr b thn) -> if evalPred b a then thn else EmptySet) nodexs in
     let ms = matches childxs children in
     let dxs = deriveReturns xs ms in
-    dxs
+    debug "return" dxs
 
 matches :: [Expr] -> [Tree] -> [Bool]
 matches xs ts = map nullable (foldl derives xs ts)
@@ -264,11 +345,11 @@ vegan_4bananas_example = contains (Node (Eq "Ingredients") (And noeggs (max_bana
 examples :: IO ()
 examples = do
     Test.test "match" match example_vegan EgglessBananaBread.example True
-    Test.test "match" match example_3bananas EgglessBananaBread.example False
-    Test.test "match" match vegan_4bananas_example EgglessBananaBread.example True
-    Test.test "match" match example_vegan NuttyBananaBread.example False
-    Test.test "match" match example_3bananas NuttyBananaBread.example False
-    Test.test "match" match vegan_4bananas_example NuttyBananaBread.example False
-    Test.test "match" match example_vegan MapleBananaBread.example False
-    Test.test "match" match example_3bananas MapleBananaBread.example True
-    Test.test "match" match vegan_4bananas_example MapleBananaBread.example False
+    -- Test.test "match" match example_3bananas EgglessBananaBread.example False
+    -- Test.test "match" match vegan_4bananas_example EgglessBananaBread.example True
+    -- Test.test "match" match example_vegan NuttyBananaBread.example False
+    -- Test.test "match" match example_3bananas NuttyBananaBread.example False
+    -- Test.test "match" match vegan_4bananas_example NuttyBananaBread.example False
+    -- Test.test "match" match example_vegan MapleBananaBread.example False
+    -- Test.test "match" match example_3bananas MapleBananaBread.example True
+    -- Test.test "match" match vegan_4bananas_example MapleBananaBread.example False
